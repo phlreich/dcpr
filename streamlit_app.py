@@ -130,20 +130,20 @@ st.pyplot(fig3)
 
 ###### PACMAP ################
 
-v1 = st.checkbox('Exclude from PaCMAP: 1. age')
-v2 = st.checkbox('Exclude from PaCMAP: 2. sex')
-v3 = st.checkbox('Exclude from PaCMAP: 3. cp: chest pain type (4 values)')
-v4 = st.checkbox('Exclude from PaCMAP: 4. trestbps: resting blood pressure (in mm Hg on admission to the hospital)')
-v5 = st.checkbox('Exclude from PaCMAP: 5. chol: serum cholestoral in mg/dl')
-v6 = st.checkbox('Exclude from PaCMAP: 6. fbs: fasting blood sugar > 120 mg/dl')
-v7 = st.checkbox('Exclude from PaCMAP: 7. restecg: resting electrocardiographic results (values 0,1,2)')
-v8 = st.checkbox('Exclude from PaCMAP: 8. thalach: maximum heart rate achieved')
-v9 = st.checkbox('Exclude from PaCMAP: 9. exang: exercise induced angina')
-v10 = st.checkbox('Exclude from PaCMAP: 10. oldpeak: ST depression induced by exercise relative to rest')
-v11 = st.checkbox('Exclude from PaCMAP: 11. slope: the slope of the peak exercise ST segment')
-v12 = st.checkbox('Exclude from PaCMAP: 12. ca: number of major vessels (0-3) colored by flourosopy')
-v13 = st.checkbox('Exclude from PaCMAP: 13. thal: 0 = normal; 1 = fixed defect; 2 = reversable defect')
-v14 = st.checkbox('Exclude from PaCMAP: 14. target: 1 = disease; 0 = no disease')
+v1 = st.checkbox('Exclude from dim-reduction: 1. age')
+v2 = st.checkbox('Exclude from dim-reduction: 2. sex')
+v3 = st.checkbox('Exclude from dim-reduction: 3. cp: chest pain type (4 values)')
+v4 = st.checkbox('Exclude from dim-reduction: 4. trestbps: resting blood pressure (in mm Hg on admission to the hospital)')
+v5 = st.checkbox('Exclude from dim-reduction: 5. chol: serum cholestoral in mg/dl')
+v6 = st.checkbox('Exclude from dim-reduction: 6. fbs: fasting blood sugar > 120 mg/dl')
+v7 = st.checkbox('Exclude from dim-reduction: 7. restecg: resting electrocardiographic results (values 0,1,2)')
+v8 = st.checkbox('Exclude from dim-reduction: 8. thalach: maximum heart rate achieved')
+v9 = st.checkbox('Exclude from dim-reduction: 9. exang: exercise induced angina')
+v10 = st.checkbox('Exclude from dim-reduction: 10. oldpeak: ST depression induced by exercise relative to rest')
+v11 = st.checkbox('Exclude from dim-reduction: 11. slope: the slope of the peak exercise ST segment')
+v12 = st.checkbox('Exclude from dim-reduction: 12. ca: number of major vessels (0-3) colored by flourosopy')
+v13 = st.checkbox('Exclude from dim-reduction: 13. thal: 0 = normal; 1 = fixed defect; 2 = reversable defect')
+v14 = st.checkbox('Exclude from dim-reduction: 14. target: 1 = disease; 0 = no disease')
 
 vars = [v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14]
 vars = [not i for i in vars]
@@ -185,7 +185,7 @@ st.write("t-SNE:")
 from sklearn.manifold import TSNE
 
 X_embedded = TSNE(n_components=2, 
-    learning_rate='auto', init='random', perplexity=3).fit_transform(df.to_numpy())
+    learning_rate='auto', init='pca', perplexity=3).fit_transform(df.to_numpy()[:,vars])
 
 tsnefig, tsneax = plt.subplots(1, 1, figsize=(6, 6))
 tsneax.scatter(X_embedded[:, 0], X_embedded[:, 1], c=df.target)#, cmap="Spectral")
