@@ -13,47 +13,17 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
+from pages.Data_Imputation import impute_listwise_deletion
+
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 imputation_feats = ['slope', 'exang', 'restecg', 'fbs', 'cp']
 
-def delete_with_probability(val):
-    if randint(0, 100) <= 5:
-        val = np.NAN
-    return val
 
+df = pd.read_csv("data/heart.csv") # original
 
-def delete_random_values(df: pd.DataFrame):
-    """Delete values in given columns randomly with probability 0.05"""
-    cols = ['slope', 'exang', 'restecg', 'fbs', 'cp']
-    for col in cols:
-        df[col] = df[col].apply(delete_with_probability)
-    return df
-    
-def impute_mean(df: pd.DataFrame):
-    """Replace NAN with mean of column"""
-    for feat in imputation_feats:
-        mean = df[feat].mean()
-        df[feat] = df[feat].fillna(mean)
-
-    return df
-
-
-def impute_median(df: pd.DataFrame):
-    """Replace NAN with median of column"""
-    for feat in imputation_feats:
-        mean = df[feat].median()
-        df[feat] = df[feat].fillna(mean)
-
-    return df
-
-
-def impute_listwise_deletion(df: pd.DataFrame):
-    """Remove a row where at least one value is NAN"""
-    return df.dropna()
-
-
-df = pd.read_csv("data/heart.csv")
+# TODO: multiple reads for toggle
+# df_del = pd.read_csv("data/heart.csv")
 
 st.title('Heart Disease Dataset')
 st.text("""This data set dates from 1988 and consists of four databases:\n
