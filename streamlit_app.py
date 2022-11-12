@@ -13,6 +13,8 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
+st.set_option('deprecation.showPyplotGlobalUse', False)
+
 imputation_feats = ['slope', 'exang', 'restecg', 'fbs', 'cp']
 
 def delete_with_probability(val):
