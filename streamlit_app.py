@@ -1,5 +1,8 @@
 import streamlit as st 
 
+import pacmap as pm
+from sklearn.cluster import KMeans
+from sklearn.manifold import TSNE
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -128,81 +131,74 @@ for index in range(len(cat_col)):
 st.pyplot(fig3)
 
 
-###### PACMAP ################
+############################################################################
 
-v1 = st.checkbox('Exclude from dim-reduction: 1. age')
-v2 = st.checkbox('Exclude from dim-reduction: 2. sex')
-v3 = st.checkbox('Exclude from dim-reduction: 3. cp: chest pain type (4 values)')
-v4 = st.checkbox('Exclude from dim-reduction: 4. trestbps: resting blood pressure (in mm Hg on admission to the hospital)')
-v5 = st.checkbox('Exclude from dim-reduction: 5. chol: serum cholestoral in mg/dl')
-v6 = st.checkbox('Exclude from dim-reduction: 6. fbs: fasting blood sugar > 120 mg/dl')
-v7 = st.checkbox('Exclude from dim-reduction: 7. restecg: resting electrocardiographic results (values 0,1,2)')
-v8 = st.checkbox('Exclude from dim-reduction: 8. thalach: maximum heart rate achieved')
-v9 = st.checkbox('Exclude from dim-reduction: 9. exang: exercise induced angina')
-v10 = st.checkbox('Exclude from dim-reduction: 10. oldpeak: ST depression induced by exercise relative to rest')
-v11 = st.checkbox('Exclude from dim-reduction: 11. slope: the slope of the peak exercise ST segment')
-v12 = st.checkbox('Exclude from dim-reduction: 12. ca: number of major vessels (0-3) colored by flourosopy')
-v13 = st.checkbox('Exclude from dim-reduction: 13. thal: 0 = normal; 1 = fixed defect; 2 = reversable defect')
-v14 = st.checkbox('Exclude from dim-reduction: 14. target: 1 = disease; 0 = no disease')
+variable_list = ["1. age",
+"2. sex",
+"3. cp: chest pain type (4 values)",
+"4. trestbps: resting blood pressure (in mm Hg on admission to the hospital)",
+"5. chol: serum cholestoral in mg/dl",
+"6. fbs: fasting blood sugar > 120 mg/dl",
+"7. restecg: resting electrocardiographic results (values 0,1,2)",
+"8. thalach: maximum heart rate achieved",
+"9. exang: exercise induced angina",
+"10. oldpeak: ST depression induced by exercise relative to rest",
+"11. slope: the slope of the peak exercise ST segment",
+"12. ca: number of major vessels (0-3) colored by flourosopy",
+"13. thal: 0 = normal; 1 = fixed defect; 2 = reversable defect",
+"14. target: 1 = disease; 0 = no disease",]
 
-vars = [v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14]
-vars = [not i for i in vars]
+vars = st.multiselect('Select the attributes to include in the dimensionality reduction:',
+    variable_list,
+    default=variable_list)
 
-#df.columns.to_numpy().reshape(1,-1)[:,vars][:5]
-#df.to_numpy()[:,vars][:2]
+#st.write('You selected:', vars)
 
-select_sex = st.slider('0 for female, 1 for male, 2 for both:', 0, 1, 2)
+vars = [True if i in vars else False for i in variable_list]
 
-st.write('PaCMAP dim reduction. Dark color indicates healthy, light color indicates disease:')
+select_sex = st.select_slider("",options=["both sexes included", "only male", "only female",])
 
-if select_sex != 2:
+if select_sex != "both sexes included":
+    if select_sex == "only female": 
+        select_sex = 0
+    else:
+        select_sex = 1
     df = df[df["sex"] == select_sex]
 
-import pacmap as pm
-
-def pacmap(df, target=True):
-
-    # create pacmap object
-    pac = pm.PaCMAP()
-
-    # fit pacmap
-
-    reduced = pac.fit_transform(df.to_numpy()[:,vars], init="pca")
-
-    # plot
-    fig, ax = plt.subplots(1, 1, figsize=(6, 6))
-    ax.scatter(reduced[:, 0], reduced[:, 1], c=df.target)#, cmap="Spectral")
-
-
-
-st.pyplot(pacmap(df))
-
-
-############# t-sne ###################
-
-st.write("t-SNE:")
-
-from sklearn.manifold import TSNE
+############# t-sne ############################
 
 X_embedded = TSNE(n_components=2, 
     learning_rate='auto', init='pca', perplexity=3).fit_transform(df.to_numpy()[:,vars])
 
-tsnefig, tsneax = plt.subplots(1, 1, figsize=(6, 6))
-tsneax.scatter(X_embedded[:, 0], X_embedded[:, 1], c=df.target)#, cmap="Spectral")
-
-st.pyplot(tsnefig)
-
 
 ############# Task2: clusters ###################
 
-from sklearn.cluster import KMeans
-
-st.write("K-means clustering:")
-k = st.slider('Number of clusters:', 2, 10, 1)
+k = st.slider('Number of k-means clusters:', 2, 10, 1)
 
 kmeans = KMeans(n_clusters=k, random_state=0).fit(df.to_numpy()[:,vars])
 
 kmeansgraph = plt.figure()
-plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=kmeans.labels_)
+
+coloring = st.selectbox('Select data coloring scheme:', ["target", "cluster", "sex"])
+
+if coloring == "cluster":
+    coloring = kmeans.labels_
+elif coloring == "target":
+    coloring = df.target
+else:
+    coloring = df.sex
+
+plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=coloring)
 st.pyplot(kmeansgraph)
+
+###################### PACMAP ########################
+
+# create pacmap object
+pac = pm.PaCMAP()
+# fit pacmap
+reduced = pac.fit_transform(df.to_numpy()[:,vars], init="pca")
+# plot
+figpm, axpm = plt.subplots(1, 1, figsize=(6, 6))
+axpm.scatter(reduced[:, 0], reduced[:, 1], c=coloring)
+st.pyplot(figpm)
 
