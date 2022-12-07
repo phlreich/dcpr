@@ -148,7 +148,7 @@ variable_list = ["1. age",
 "13. thal: 0 = normal; 1 = fixed defect; 2 = reversable defect",
 "14. target: 1 = disease; 0 = no disease",]
 
-vars = st.multiselect('Select the attributes to include in the dimensionality reduction:',
+vars = st.multiselect('Select the attributes to include in the clustering:',
     variable_list,
     default=variable_list)
 
@@ -168,7 +168,7 @@ if select_sex != "both sexes included":
 ############# t-sne ############################
 
 X_embedded = TSNE(n_components=2, 
-    learning_rate='auto', init='pca', perplexity=3).fit_transform(df.to_numpy()[:,vars])
+    learning_rate='auto', init='pca', perplexity=3).fit_transform(df.to_numpy())
 
 
 ############# Task2: clusters ###################
@@ -196,9 +196,8 @@ st.pyplot(kmeansgraph)
 # create pacmap object
 pac = pm.PaCMAP()
 # fit pacmap
-reduced = pac.fit_transform(df.to_numpy()[:,vars], init="pca")
+reduced = pac.fit_transform(df.to_numpy(), init="pca")
 # plot
 figpm, axpm = plt.subplots(1, 1, figsize=(6, 6))
 axpm.scatter(reduced[:, 0], reduced[:, 1], c=coloring)
 st.pyplot(figpm)
-
