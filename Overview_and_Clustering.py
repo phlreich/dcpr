@@ -70,7 +70,7 @@ def get_davies_bouldin_score(X, kmeans):
     labels = kmeans.labels_
     st.write("Davies Bouldin Score (The lower the better):")
     if max(labels) < 1:
-        return st.write("Chosse at least k=2 to get a valid score!")
+        return st.write("Choose at least k=2 to get a valid score!")
     else:
         score = metrics.davies_bouldin_score(X, labels)
         return st.write(score)
@@ -220,13 +220,13 @@ dbscan = DBSCAN(eps=eps, min_samples=min_samples).fit(df.to_numpy()[:,vars])
 
 ############## Choose coloring scheme
 
-coloring = st.selectbox('Select data coloring scheme:', ["target", "sex", "KMEANS cluster", "DBSCAN cluster"])
+coloring_name = st.selectbox('Select data coloring scheme:', ["target", "sex", "KMEANS cluster", "DBSCAN cluster"])
 
-if coloring == "KMEANS cluster":
+if coloring_name == "KMEANS cluster":
     coloring = kmeans.labels_
-elif coloring == "target":
+elif coloring_name == "target":
     coloring = df.target
-elif coloring == "DBSCAN cluster":
+elif coloring_name == "DBSCAN cluster":
     coloring = dbscan.labels_
 else:
     coloring = df.sex
@@ -236,6 +236,7 @@ else:
 X_embedded = TSNE(n_components=2, learning_rate='auto', init='pca', perplexity=3).fit_transform(df.to_numpy())
 tsne_plot = plt.figure()
 plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=coloring)
+plt.title("t-SNE, coloring:" + coloring_name)
 st.pyplot(tsne_plot)
 
 st.write("K-means scores:")
@@ -255,6 +256,7 @@ reduced = pac.fit_transform(df.to_numpy(), init="pca")
 # plot
 figpm, axpm = plt.subplots(1, 1, figsize=(6, 6))
 axpm.scatter(reduced[:, 0], reduced[:, 1], c=coloring)
+axpm.set_title("PaCMAP, coloring: " + coloring_name)
 st.pyplot(figpm)
 
 st.write("K-means scores:")
