@@ -228,6 +228,20 @@ else:
 plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=coloring)
 st.pyplot(kmeansgraph)
 
+# DBSCAN
+from sklearn.cluster import DBSCAN 
+eps = st.slider('DBSCAN eps:', 0.1, 1.0, 0.1)
+min_samples = st.slider('DBSCAN min_samples:', 1, 10, 1)
+
+dbscan = DBSCAN(eps=eps, min_samples=min_samples).fit(df.to_numpy()[:,vars])
+
+get_silhouette_coefficient(X_embedded, dbscan)
+get_davies_bouldin_score(X_embedded, dbscan)
+
+dbscangraph = plt.figure()
+plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=dbscan.labels_)
+st.pyplot(dbscangraph)
+
 ###################### PACMAP ########################
 
 # create pacmap object
