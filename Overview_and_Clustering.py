@@ -76,7 +76,6 @@ def get_davies_bouldin_score(X, kmeans):
         return st.write(score)
 
 df = pd.read_csv("data/heart.csv")
-from sklearn.preprocessing import MinMaxScaler
 
 
 st.title('Heart Disease Dataset')
@@ -186,10 +185,11 @@ if select_sex != "both sexes included":
         select_sex = 1
     df = df[df["sex"] == select_sex]
 
+
+categorical = ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'thal', 'target']
+categorical = [i for i in categorical if i in df.columns]
 one_hot_encode = st.checkbox('One-hot encode categorical features')
 if one_hot_encode:
-    categorical = ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'thal', 'target']
-    categorical = [i for i in categorical if i in df.columns]
     pd.get_dummies(df, columns=categorical)
 
 min_max_normalize = st.checkbox('Min-max normalize numerical features')
@@ -209,10 +209,10 @@ X_embedded = TSNE(n_components=2,
 
 k = st.slider('Number of k-means clusters:', 2, 10, 1)
 
-kmeans = KMeans(n_clusters=k, random_state=0).fit(df.to_numpy()[:,vars])
-
 get_silhouette_coefficient(X_embedded, kmeans)
 get_davies_bouldin_score(X_embedded, kmeans)
+
+kmeans = KMeans(n_clusters=k, random_state=0).fit(df.to_numpy()[:,vars])
 
 kmeansgraph = plt.figure()
 
