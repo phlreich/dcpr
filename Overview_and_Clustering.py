@@ -188,11 +188,11 @@ if select_sex != "both sexes included":
 
 categorical = ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'thal', 'target']
 categorical = [i for i in categorical if i in df.columns]
-one_hot_encode = st.checkbox('One-hot encode categorical features')
+one_hot_encode = st.checkbox('One-hot encode categorical features', value=True)
 if one_hot_encode:
     pd.get_dummies(df, columns=categorical)
 
-min_max_normalize = st.checkbox('Min-max normalize numerical features')
+min_max_normalize = st.checkbox('Min-max normalize numerical features', value=True)
 if min_max_normalize:
     columns_to_normalize = [i for i in df.columns if i not in categorical]
     from sklearn.preprocessing import MinMaxScaler
@@ -204,16 +204,14 @@ if min_max_normalize:
 
 ############# Task2: clusters ###################
 
-k = st.slider('Number of k-means clusters:', 2, 10, 1)
+k = st.slider('Number of k-means clusters:', 1, 10, 2)
 
 kmeans = KMeans(n_clusters=k, random_state=0).fit(df.to_numpy()[:,vars])
 
 
-
-
 # DBSCAN
 from sklearn.cluster import DBSCAN 
-eps = st.slider('DBSCAN eps:', 0.1, 1.0, 0.1)
+eps = st.slider('DBSCAN eps:', 0.0, 2.0, 0.5)
 min_samples = st.slider('DBSCAN min_samples:', 1, 10, 1)
 dbscan = DBSCAN(eps=eps, min_samples=min_samples).fit(df.to_numpy()[:,vars])
 
@@ -239,11 +237,13 @@ plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=coloring)
 plt.title("t-SNE, coloring:" + coloring_name)
 st.pyplot(tsne_plot)
 
-st.write("K-means scores:")
+#st.write("K-means scores:")
+st.markdown("<h4 style='text-align: center; '>K-means scores:</h4>", unsafe_allow_html=True)
 get_silhouette_coefficient(X_embedded, kmeans)
 get_davies_bouldin_score(X_embedded, kmeans)
 
-st.write("DBSCAN scores:")
+#st.write("DBSCAN scores:")
+st.markdown("<h4 style='text-align: center; '>DBSCAN scores:</h4>", unsafe_allow_html=True)
 get_silhouette_coefficient(X_embedded, dbscan)
 get_davies_bouldin_score(X_embedded, dbscan)
 
@@ -259,10 +259,12 @@ axpm.scatter(reduced[:, 0], reduced[:, 1], c=coloring)
 axpm.set_title("PaCMAP, coloring: " + coloring_name)
 st.pyplot(figpm)
 
-st.write("K-means scores:")
+#st.write("K-means scores:")
+st.markdown("<h4 style='text-align: center; '>K-means scores:</h4>", unsafe_allow_html=True)
 get_silhouette_coefficient(reduced, kmeans)
 get_davies_bouldin_score(reduced, kmeans)
 
-st.write("DBSCAN scores:")
+#st.write("DBSCAN scores:")
+st.markdown("<h4 style='text-align: center; '>DBSCAN scores:</h4>", unsafe_allow_html=True)
 get_silhouette_coefficient(reduced, dbscan)
 get_davies_bouldin_score(reduced, dbscan)
