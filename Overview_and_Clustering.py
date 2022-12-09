@@ -76,6 +76,8 @@ def get_davies_bouldin_score(X, kmeans):
         return st.write(score)
 
 df = pd.read_csv("data/heart.csv")
+from sklearn.preprocessing import MinMaxScaler
+
 
 st.title('Heart Disease Dataset')
 st.text("""This data set dates from 1988 and consists of four databases:\n
@@ -183,6 +185,19 @@ if select_sex != "both sexes included":
     else:
         select_sex = 1
     df = df[df["sex"] == select_sex]
+
+one_hot_encode = st.checkbox('One-hot encode categorical features')
+if one_hot_encode:
+    categorical = ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'thal', 'target']
+    categorical = [i for i in categorical if i in df.columns]
+    pd.get_dummies(df, columns=categorical)
+
+min_max_normalize = st.checkbox('Min-max normalize numerical features')
+if min_max_normalize:
+    columns_to_normalize = [i for i in df.columns if i not in categorical]
+    from sklearn.preprocessing import MinMaxScaler
+    scaler = MinMaxScaler()
+    df[columns_to_normalize] = scaler.fit_transform(df[columns_to_normalize])
 
 ############# t-sne ############################
 
