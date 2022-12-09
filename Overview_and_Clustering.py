@@ -74,7 +74,6 @@ def get_davies_bouldin_score(X, kmeans):
     else:
         score = metrics.davies_bouldin_score(X, labels)
         return st.write(score)
-    
 
 df = pd.read_csv("data/heart.csv")
 
