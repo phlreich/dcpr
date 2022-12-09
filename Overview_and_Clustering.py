@@ -199,10 +199,7 @@ if min_max_normalize:
     scaler = MinMaxScaler()
     df[columns_to_normalize] = scaler.fit_transform(df[columns_to_normalize])
 
-############# t-sne ############################
 
-X_embedded = TSNE(n_components=2, 
-    learning_rate='auto', init='pca', perplexity=3).fit_transform(df.to_numpy())
 
 
 ############# Task2: clusters ###################
@@ -211,36 +208,43 @@ k = st.slider('Number of k-means clusters:', 2, 10, 1)
 
 kmeans = KMeans(n_clusters=k, random_state=0).fit(df.to_numpy()[:,vars])
 
-get_silhouette_coefficient(X_embedded, kmeans)
-get_davies_bouldin_score(X_embedded, kmeans)
 
-kmeansgraph = plt.figure()
 
-coloring = st.selectbox('Select data coloring scheme:', ["target", "cluster", "sex"])
-
-if coloring == "cluster":
-    coloring = kmeans.labels_
-elif coloring == "target":
-    coloring = df.target
-else:
-    coloring = df.sex
-
-plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=coloring)
-st.pyplot(kmeansgraph)
 
 # DBSCAN
 from sklearn.cluster import DBSCAN 
 eps = st.slider('DBSCAN eps:', 0.1, 1.0, 0.1)
 min_samples = st.slider('DBSCAN min_samples:', 1, 10, 1)
-
 dbscan = DBSCAN(eps=eps, min_samples=min_samples).fit(df.to_numpy()[:,vars])
 
+
+############## Choose coloring scheme
+
+coloring = st.selectbox('Select data coloring scheme:', ["target", "sex", "KMEANS cluster", "DBSCAN cluster"])
+
+if coloring == "KMEANS cluster":
+    coloring = kmeans.labels_
+elif coloring == "target":
+    coloring = df.target
+elif coloring == "DBSCAN cluster":
+    coloring = dbscan.labels_
+else:
+    coloring = df.sex
+
+############# t-sne ############################
+
+X_embedded = TSNE(n_components=2, learning_rate='auto', init='pca', perplexity=3).fit_transform(df.to_numpy())
+tsne_plot = plt.figure()
+plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=coloring)
+st.pyplot(tsne_plot)
+
+st.write("K-means scores:")
+get_silhouette_coefficient(X_embedded, kmeans)
+get_davies_bouldin_score(X_embedded, kmeans)
+
+st.write("DBSCAN scores:")
 get_silhouette_coefficient(X_embedded, dbscan)
 get_davies_bouldin_score(X_embedded, dbscan)
-
-dbscangraph = plt.figure()
-plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=dbscan.labels_)
-st.pyplot(dbscangraph)
 
 ###################### PACMAP ########################
 
@@ -252,3 +256,11 @@ reduced = pac.fit_transform(df.to_numpy(), init="pca")
 figpm, axpm = plt.subplots(1, 1, figsize=(6, 6))
 axpm.scatter(reduced[:, 0], reduced[:, 1], c=coloring)
 st.pyplot(figpm)
+
+st.write("K-means scores:")
+get_silhouette_coefficient(reduced, kmeans)
+get_davies_bouldin_score(reduced, kmeans)
+
+st.write("DBSCAN scores:")
+get_silhouette_coefficient(reduced, dbscan)
+get_davies_bouldin_score(reduced, dbscan)
