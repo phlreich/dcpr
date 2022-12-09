@@ -209,10 +209,10 @@ X_embedded = TSNE(n_components=2,
 
 k = st.slider('Number of k-means clusters:', 2, 10, 1)
 
+kmeans = KMeans(n_clusters=k, random_state=0).fit(df.to_numpy()[:,vars])
+
 get_silhouette_coefficient(X_embedded, kmeans)
 get_davies_bouldin_score(X_embedded, kmeans)
-
-kmeans = KMeans(n_clusters=k, random_state=0).fit(df.to_numpy()[:,vars])
 
 kmeansgraph = plt.figure()
 
