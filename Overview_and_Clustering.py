@@ -3,6 +3,7 @@ import streamlit as st
 import pacmap as pm
 from sklearn.cluster import KMeans
 from sklearn.manifold import TSNE
+from sklearn import metrics
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -55,6 +56,25 @@ def impute_listwise_deletion(df: pd.DataFrame):
     """Remove a row where at least one value is NAN"""
     return df.dropna()
 
+def get_silhouette_coefficient(X, kmeans, metric='euclidean'):
+    """Silhouette Coefficient for kmeans clustering"""
+    labels = kmeans.labels_
+    st.write("Silhouette Coefficient (The higher the score the better the clustering [0,1]; -1 invalid cluster):")
+    if max(labels) < 1:
+        return st.write("Choose at least k=2 to get a valid coefficient!")
+    else:
+        coefficient = metrics.silhouette_score(X, labels, metric=metric)
+        return st.write(coefficient)
+
+def get_davies_bouldin_score(X, kmeans):
+    labels = kmeans.labels_
+    st.write("Davies Bouldin Score (The lower the better):")
+    if max(labels) < 1:
+        return st.write("Chosse at least k=2 to get a valid score!")
+    else:
+        score = metrics.davies_bouldin_score(X, labels)
+        return st.write(score)
+    
 
 df = pd.read_csv("data/heart.csv")
 
@@ -176,6 +196,9 @@ X_embedded = TSNE(n_components=2,
 k = st.slider('Number of k-means clusters:', 2, 10, 1)
 
 kmeans = KMeans(n_clusters=k, random_state=0).fit(df.to_numpy()[:,vars])
+
+get_silhouette_coefficient(X_embedded, kmeans)
+get_davies_bouldin_score(X_embedded, kmeans)
 
 kmeansgraph = plt.figure()
 
