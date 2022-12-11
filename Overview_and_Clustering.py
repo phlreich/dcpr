@@ -1,3 +1,4 @@
+from pages.Data_Imputation import median_df, mean_df, deletion_df
 import streamlit as st 
 
 import pacmap as pm
@@ -16,8 +17,6 @@ import os
 import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
-
-from pages.Data_Imputation import median_df, mean_df, deletion_df
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -77,21 +76,8 @@ def get_davies_bouldin_score(X, kmeans):
         score = metrics.davies_bouldin_score(X, labels)
         return st.write(score)
 
+df = pd.read_csv("data/heart.csv")
 
-original_df = pd.read_csv("data/heart.csv")
-datasets = {
-    'Original Dataset': original_df,
-    'Median Imputation': median_df,
-    'Mean Imputation': mean_df,
-    'Listwise Deletion': deletion_df
-}
-
-dataset = st.sidebar.radio(
-    "Select the dataset",
-    datasets.keys()
-)
-
-df = datasets[dataset]
 
 st.title('Heart Disease Dataset')
 st.text("""This data set dates from 1988 and consists of four databases:\n
@@ -115,7 +101,23 @@ st.write('12. ca: number of major vessels (0-3) colored by flourosopy')
 st.write('13. thal: 0 = normal; 1 = fixed defect; 2 = reversable defect')
 st.write('14. target: 1 = disease; 0 = no disease')
 
+original_df = pd.read_csv("data/heart.csv")
+datasets = {
+    'Original Dataset': original_df,
+    'Median Imputation': median_df,
+    'Mean Imputation': mean_df,
+    #'Listwise Deletion': deletion_df
+}
 
+dataset = st.sidebar.radio(
+    "Select the dataset",
+    datasets.keys()
+)
+
+st.title("Clustering")
+st.subheader(f"Dataset: {dataset}")
+df = datasets[dataset]
+df
 st.subheader(f"Dataset Sample: {dataset}")
 # st.dataframe(df.sample(10))  # Same as st.write(df)
 df
@@ -203,9 +205,11 @@ if select_sex != "both sexes included":
 
 categorical = ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'thal', 'target']
 categorical = [i for i in categorical if i in df.columns]
-one_hot_encode = st.checkbox('One-hot encode categorical features', value=True)
-if one_hot_encode:
-    pd.get_dummies(df, columns=categorical)
+
+#one-hot encoding is not necessary for KMeans clustering (it is for other clustering methods) 
+#one_hot_encode = st.checkbox('One-hot encode categorical features', value=True)
+#if one_hot_encode:
+#    pd.get_dummies(df, columns=categorical)
 
 min_max_normalize = st.checkbox('Min-max normalize numerical features', value=True)
 if min_max_normalize:
@@ -283,4 +287,3 @@ get_davies_bouldin_score(reduced, kmeans)
 st.markdown("<h4 style='text-align: center; '>DBSCAN scores:</h4>", unsafe_allow_html=True)
 get_silhouette_coefficient(reduced, dbscan)
 get_davies_bouldin_score(reduced, dbscan)
-
