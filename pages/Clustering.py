@@ -13,7 +13,6 @@ from sklearn.cluster import KMeans
 import warnings
 from pages.Data_Imputation import deletion_df, mean_df, median_df
 
-
 warnings.simplefilter('ignore')
 sns.set()
 
@@ -41,15 +40,9 @@ df
 # oldpeak to int
 df['oldpeak'] = df['oldpeak'].astype(int)
 # categorical to object
-df['sex'] = df['sex'].astype(object)
-df['cp'] = df['cp'].astype(object)
-df['fbs'] = df['fbs'].astype(object)
-df['restecg'] = df['restecg'].astype(object)
-df['exang'] = df['exang'].astype(object)
-df['slope'] = df['slope'].astype(object)
-df['ca'] = df['ca'].astype(object)
-df['thal'] = df['thal'].astype(object)
-df['target'] = df['target'].astype(object)
+categorical = ['sex', 'fbs', 'cp', 'restecg', 'ca', 'thal', 'exang', 'slope', 'target']
+df[categorical] = df[categorical].astype(object)
+
 
 """
 The first step is to perform one-hot encoding on the categorical data\n
