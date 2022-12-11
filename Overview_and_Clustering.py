@@ -1,22 +1,25 @@
-from random import randint
+import streamlit as st 
 
-import matplotlib.pyplot as plt
-import numpy as np
 import pacmap as pm
-import pandas as pd
-import seaborn as sns
-import streamlit as st
-from sklearn import metrics
 from sklearn.cluster import KMeans
 from sklearn.manifold import TSNE
+from sklearn import metrics
 
-from pages.Data_Imputation import heart_df, deletion_df, median_df, mean_df
-
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+from collections import Counter
+import statistics
+import sys
+import os
+import plotly.express as px
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 imputation_feats = ['slope', 'exang', 'restecg', 'fbs', 'cp']
-
 
 def delete_with_probability(val):
     if randint(0, 100) <= 5:
@@ -67,11 +70,10 @@ def get_davies_bouldin_score(X, kmeans):
     labels = kmeans.labels_
     st.write("Davies Bouldin Score (The lower the better):")
     if max(labels) < 1:
-        return st.write("Chosse at least k=2 to get a valid score!")
+        return st.write("Choose at least k=2 to get a valid score!")
     else:
         score = metrics.davies_bouldin_score(X, labels)
         return st.write(score)
-
 
 df = pd.read_csv("data/heart.csv")
 
@@ -186,59 +188,64 @@ if select_sex != "both sexes included":
 
 categorical = ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'thal', 'target']
 categorical = [i for i in categorical if i in df.columns]
-one_hot_encode = st.checkbox('One-hot encode categorical features')
+one_hot_encode = st.checkbox('One-hot encode categorical features', value=True)
 if one_hot_encode:
     pd.get_dummies(df, columns=categorical)
 
-min_max_normalize = st.checkbox('Min-max normalize numerical features')
+min_max_normalize = st.checkbox('Min-max normalize numerical features', value=True)
 if min_max_normalize:
     columns_to_normalize = [i for i in df.columns if i not in categorical]
     from sklearn.preprocessing import MinMaxScaler
     scaler = MinMaxScaler()
     df[columns_to_normalize] = scaler.fit_transform(df[columns_to_normalize])
 
-############# t-sne ############################
 
-X_embedded = TSNE(n_components=2, 
-    learning_rate='auto', init='pca', perplexity=3).fit_transform(df.to_numpy())
 
 
 ############# Task2: clusters ###################
 
-k = st.slider('Number of k-means clusters:', 2, 10, 1)
+k = st.slider('Number of k-means clusters:', 1, 10, 2)
 
 kmeans = KMeans(n_clusters=k, random_state=0).fit(df.to_numpy()[:,vars])
 
-get_silhouette_coefficient(X_embedded, kmeans)
-get_davies_bouldin_score(X_embedded, kmeans)
-
-kmeansgraph = plt.figure()
-
-coloring = st.selectbox('Select data coloring scheme:', ["target", "cluster", "sex"])
-
-if coloring == "target":
-    coloring = df.target
-elif coloring == "cluster":
-    coloring = kmeans.labels_
-else:
-    coloring = df.sex
-
-plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=coloring)
-st.pyplot(kmeansgraph)
 
 # DBSCAN
 from sklearn.cluster import DBSCAN 
-eps = st.slider('DBSCAN eps:', 0.1, 1.0, 0.1)
+eps = st.slider('DBSCAN eps:', 0.0, 2.0, 0.5)
 min_samples = st.slider('DBSCAN min_samples:', 1, 10, 1)
-
 dbscan = DBSCAN(eps=eps, min_samples=min_samples).fit(df.to_numpy()[:,vars])
 
+
+############## Choose coloring scheme
+
+coloring_name = st.selectbox('Select data coloring scheme:', ["target", "sex", "KMEANS cluster", "DBSCAN cluster"])
+
+if coloring_name == "KMEANS cluster":
+    coloring = kmeans.labels_
+elif coloring_name == "target":
+    coloring = df.target
+elif coloring_name == "DBSCAN cluster":
+    coloring = dbscan.labels_
+else:
+    coloring = df.sex
+
+############# t-sne ############################
+
+X_embedded = TSNE(n_components=2, learning_rate='auto', init='pca', perplexity=3).fit_transform(df.to_numpy())
+tsne_plot = plt.figure()
+plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=coloring)
+plt.title("t-SNE, coloring:" + coloring_name)
+st.pyplot(tsne_plot)
+
+#st.write("K-means scores:")
+st.markdown("<h4 style='text-align: center; '>K-means scores:</h4>", unsafe_allow_html=True)
+get_silhouette_coefficient(X_embedded, kmeans)
+get_davies_bouldin_score(X_embedded, kmeans)
+
+#st.write("DBSCAN scores:")
+st.markdown("<h4 style='text-align: center; '>DBSCAN scores:</h4>", unsafe_allow_html=True)
 get_silhouette_coefficient(X_embedded, dbscan)
 get_davies_bouldin_score(X_embedded, dbscan)
-
-dbscangraph = plt.figure()
-plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=dbscan.labels_)
-st.pyplot(dbscangraph)
 
 ###################### PACMAP ########################
 
@@ -249,4 +256,15 @@ reduced = pac.fit_transform(df.to_numpy(), init="pca")
 # plot
 figpm, axpm = plt.subplots(1, 1, figsize=(6, 6))
 axpm.scatter(reduced[:, 0], reduced[:, 1], c=coloring)
+axpm.set_title("PaCMAP, coloring: " + coloring_name)
 st.pyplot(figpm)
+
+#st.write("K-means scores:")
+st.markdown("<h4 style='text-align: center; '>K-means scores:</h4>", unsafe_allow_html=True)
+get_silhouette_coefficient(reduced, kmeans)
+get_davies_bouldin_score(reduced, kmeans)
+
+#st.write("DBSCAN scores:")
+st.markdown("<h4 style='text-align: center; '>DBSCAN scores:</h4>", unsafe_allow_html=True)
+get_silhouette_coefficient(reduced, dbscan)
+get_davies_bouldin_score(reduced, dbscan)
