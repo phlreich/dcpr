@@ -1,25 +1,22 @@
-import streamlit as st 
+from random import randint
 
-import pacmap as pm
-from sklearn.cluster import KMeans
-from sklearn.manifold import TSNE
-from sklearn import metrics
-
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import pacmap as pm
 import pandas as pd
 import seaborn as sns
-from collections import Counter
-import statistics
-import sys
-import os
-import plotly.express as px
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
+import streamlit as st
+from sklearn import metrics
+from sklearn.cluster import KMeans
+from sklearn.manifold import TSNE
+
+from pages.Data_Imputation import heart_df, deletion_df, median_df, mean_df
+
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 imputation_feats = ['slope', 'exang', 'restecg', 'fbs', 'cp']
+
 
 def delete_with_probability(val):
     if randint(0, 100) <= 5:
@@ -74,6 +71,7 @@ def get_davies_bouldin_score(X, kmeans):
     else:
         score = metrics.davies_bouldin_score(X, labels)
         return st.write(score)
+
 
 df = pd.read_csv("data/heart.csv")
 
@@ -218,10 +216,10 @@ kmeansgraph = plt.figure()
 
 coloring = st.selectbox('Select data coloring scheme:', ["target", "cluster", "sex"])
 
-if coloring == "cluster":
-    coloring = kmeans.labels_
-elif coloring == "target":
+if coloring == "target":
     coloring = df.target
+elif coloring == "cluster":
+    coloring = kmeans.labels_
 else:
     coloring = df.sex
 
