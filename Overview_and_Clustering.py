@@ -17,6 +17,8 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
+from pages.Data_Imputation import median_df, mean_df, deletion_df
+
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 imputation_feats = ['slope', 'exang', 'restecg', 'fbs', 'cp']
@@ -75,8 +77,21 @@ def get_davies_bouldin_score(X, kmeans):
         score = metrics.davies_bouldin_score(X, labels)
         return st.write(score)
 
-df = pd.read_csv("data/heart.csv")
 
+original_df = pd.read_csv("data/heart.csv")
+datasets = {
+    'Original Dataset': original_df,
+    'Median Imputation': median_df,
+    'Mean Imputation': mean_df,
+    'Listwise Deletion': deletion_df
+}
+
+dataset = st.sidebar.radio(
+    "Select the dataset",
+    datasets.keys()
+)
+
+df = datasets[dataset]
 
 st.title('Heart Disease Dataset')
 st.text("""This data set dates from 1988 and consists of four databases:\n
@@ -101,7 +116,7 @@ st.write('13. thal: 0 = normal; 1 = fixed defect; 2 = reversable defect')
 st.write('14. target: 1 = disease; 0 = no disease')
 
 
-st.subheader('Dataset sample:')
+st.subheader(f"Dataset Sample: {dataset}")
 # st.dataframe(df.sample(10))  # Same as st.write(df)
 df
 
@@ -268,3 +283,4 @@ get_davies_bouldin_score(reduced, kmeans)
 st.markdown("<h4 style='text-align: center; '>DBSCAN scores:</h4>", unsafe_allow_html=True)
 get_silhouette_coefficient(reduced, dbscan)
 get_davies_bouldin_score(reduced, dbscan)
+

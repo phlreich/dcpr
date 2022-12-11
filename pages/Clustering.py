@@ -123,25 +123,13 @@ st.pyplot(fig_elbow)
 from sklearn.metrics import silhouette_score
 
 # Initialize our model
-kmeans = KMeans(n_clusters=3)
+kmeans = KMeans(n_clusters=2)
 # Fit our model
 clusters = kmeans.fit(df_norm)
 # Find which cluster each data-point belongs to
 label = kmeans.predict(df_norm)
 # Add the cluster vector to our DataFrame, X
 df_norm["Cluster"] = clusters.labels_
-
-"""
-The Silhouette score is a metric used to calculate the goodness of a clustering technique.\n
-Its value ranges from -1 to 1\n
-1: Clusters are well apart from each other and clearly distinguished.\n
-0: Clusters are indifferent, or we can say that the distance between clusters is not significant.\n
--1: Clusters are assigned in the wrong way.\n\n
-
-Source:\n
-https://towardsdatascience.com/silhouette-coefficient-validating-clustering-techniques-e976bb81d10c#:~:text=Silhouette%20Coefficient%20or%20silhouette%20score%20is%20a%20metric%20used%20to,each%20other%20and%20clearly%20distinguished.
-"""
-st.subheader(f"Silhouette Score(n=2): {silhouette_score(df_norm, label)}")
 
 fig = plt.figure(figsize=(10, 4))
 p = sns.scatterplot(data=df_norm, x="PC1_2d", y="PC2_2d", hue=clusters.labels_, legend="full", palette="deep")
