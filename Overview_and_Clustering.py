@@ -248,6 +248,18 @@ elif coloring_name == "DBSCAN cluster":
 else:
     coloring = df.sex
 
+
+st.markdown("<h1 style='text-align: center; '>Scores in high dimensions</h1>", unsafe_allow_html=True)
+non_reduced = df.to_numpy()[:,vars]
+#st.write("K-means scores:")
+st.markdown("<h4 style='text-align: center; '>K-means scores:</h4>", unsafe_allow_html=True)
+get_silhouette_coefficient(non_reduced, kmeans)
+get_davies_bouldin_score(non_reduced, kmeans)
+
+#st.write("DBSCAN scores:")
+st.markdown("<h4 style='text-align: center; '>DBSCAN scores:</h4>", unsafe_allow_html=True)
+get_silhouette_coefficient(non_reduced, dbscan)
+get_davies_bouldin_score(non_reduced, dbscan)
 ############# t-sne ############################
 
 X_embedded = TSNE(n_components=2, learning_rate='auto', init='pca', perplexity=3).fit_transform(df.to_numpy())
@@ -287,3 +299,4 @@ get_davies_bouldin_score(reduced, kmeans)
 st.markdown("<h4 style='text-align: center; '>DBSCAN scores:</h4>", unsafe_allow_html=True)
 get_silhouette_coefficient(reduced, dbscan)
 get_davies_bouldin_score(reduced, dbscan)
+
