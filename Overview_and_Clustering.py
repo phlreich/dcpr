@@ -185,13 +185,15 @@ variable_list = ["1. age",
 "13. thal: 0 = normal; 1 = fixed defect; 2 = reversable defect",
 "14. target: 1 = disease; 0 = no disease",]
 
-vars = st.multiselect('Select the attributes to include in the clustering:',
+st.session_state.variable_list = variable_list
+
+vars_ = st.multiselect('Select the attributes to include in the clustering:',
     variable_list,
     default=variable_list)
 
-#st.write('You selected:', vars)
+#st.write('You selected:', vars_)
 
-vars = [True if i in vars else False for i in variable_list]
+vars_ = [True if i in vars_ else False for i in variable_list]
 
 select_sex = st.select_slider("",options=["both sexes included", "only male", "only female",])
 
@@ -225,14 +227,14 @@ if min_max_normalize:
 
 k = st.slider('Number of k-means clusters:', 1, 10, 2)
 
-kmeans = KMeans(n_clusters=k, random_state=0).fit(df.to_numpy()[:,vars])
+kmeans = KMeans(n_clusters=k, random_state=0).fit(df.to_numpy()[:,vars_])
 
 
 # DBSCAN
 from sklearn.cluster import DBSCAN 
 eps = st.slider('DBSCAN eps:', 0.0, 2.0, 0.5)
 min_samples = st.slider('DBSCAN min_samples:', 1, 10, 1)
-dbscan = DBSCAN(eps=eps, min_samples=min_samples).fit(df.to_numpy()[:,vars])
+dbscan = DBSCAN(eps=eps, min_samples=min_samples).fit(df.to_numpy()[:,vars_])
 
 
 ############## Choose coloring scheme
@@ -250,7 +252,7 @@ else:
 
 
 st.markdown("<h1 style='text-align: center; '>Scores in high dimensions</h1>", unsafe_allow_html=True)
-non_reduced = df.to_numpy()[:,vars]
+non_reduced = df.to_numpy()[:,vars_]
 #st.write("K-means scores:")
 st.markdown("<h4 style='text-align: center; '>K-means scores:</h4>", unsafe_allow_html=True)
 get_silhouette_coefficient(non_reduced, kmeans)
@@ -300,3 +302,7 @@ st.markdown("<h4 style='text-align: center; '>DBSCAN scores:</h4>", unsafe_allow
 get_silhouette_coefficient(reduced, dbscan)
 get_davies_bouldin_score(reduced, dbscan)
 
+# write df to streamlit session state
+
+st.session_state.df = df
+st.session_state.vars_ = vars_

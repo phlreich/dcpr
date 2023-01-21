@@ -1,3 +1,4 @@
+wheel
 streamlit
 ipykernel
 matplotlib
