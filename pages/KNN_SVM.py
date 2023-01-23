@@ -141,6 +141,8 @@ plt.plot(range(1, 30), error, color='red', linestyle='dashed', marker='o',
 plt.title('Error Rate K Value')
 plt.xlabel('K Value')
 plt.ylabel('Mean Error')
+st.pyplot(plt)
+
 st.write("Minimum error:-", min(error), "at K =", error.index(min(error)) + 1)
 
 classifier = KNeighborsClassifier(n_neighbors=4)
@@ -188,6 +190,8 @@ plt.plot(range(1, 30), error, color='red', linestyle='dashed', marker='o',
 plt.title('Error Rate K Value')
 plt.xlabel('K Value')
 plt.ylabel('Mean Error')
+st.pyplot(plt)
+
 st.write("Minimum error:-", min(error), "at K =", error.index(min(error)) + 1)
 
 classifier = KNeighborsClassifier(n_neighbors=4)
@@ -236,6 +240,8 @@ plt.plot(range(1, 30), error, color='red', linestyle='dashed', marker='o',
 plt.title('Error Rate K Value')
 plt.xlabel('K Value')
 plt.ylabel('Mean Error')
+st.pyplot(plt)
+
 st.write("Minimum error:-", min(error), "at K =", error.index(min(error)) + 1)
 
 classifier = KNeighborsClassifier(n_neighbors=4)
@@ -281,6 +287,8 @@ plt.plot(range(1, 30), error, color='red', linestyle='dashed', marker='o',
 plt.title('Error Rate K Value')
 plt.xlabel('K Value')
 plt.ylabel('Mean Error')
+st.pyplot(plt)
+
 st.write("Minimum error:-", min(error), "at K =", error.index(min(error)) + 1)
 
 classifier = KNeighborsClassifier(n_neighbors=4)
