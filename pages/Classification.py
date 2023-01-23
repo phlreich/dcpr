@@ -16,6 +16,20 @@ vars_ = st.multiselect('Select the attributes to include:',
     default=variable_list[:-1])
 vars_ = [True if i in vars_ else False for i in variable_list]
 
+exclude_percent = st.slider("Percent of data where target=1 to exclude:", 0, 99, 0)
+
+if exclude_percent > 0:
+    df = df[df.target == 0]
+    df_len = len(df)
+    cutoff = int(df_len * exclude_percent / 100)
+    df = df.append(st.session_state.df[st.session_state.df.target == 1][:cutoff])
+
+# show data balance
+
+st.markdown("<h4 style='text-align: center; '>Data balance:</h4>", unsafe_allow_html=True)
+
+st.write(df.target.value_counts())
+
 df_len = len(df)
 cutoff = int(df_len * train_percent / 100)
 

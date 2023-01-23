@@ -5,3 +5,5 @@ matplotlib
 plotly
 seaborn
 pacmap
+graphviz
+imblearn
