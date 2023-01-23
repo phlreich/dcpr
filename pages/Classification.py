@@ -34,3 +34,26 @@ report = classification_report(df[cutoff:].target, clf.predict(df[cutoff:].to_nu
 report = pd.DataFrame(report).transpose()
 
 st.write(report)
+
+from imblearn.over_sampling import BorderlineSMOTE
+from collections import Counter
+
+st.header("Oversampling with Borderline SMOTE")
+st.write("Dataset is already balanced")
+st.write(df['target'].value_counts())
+
+
+X_resampled, y_resampled = BorderlineSMOTE().fit_resample(df, df.target)
+c_df = sorted(Counter(y_resampled).items())
+# df_resampled = pd.DataFrame.from_dict(Counter(y_resampled).items(), orient='index').reset_index()
+df_resampled = pd.DataFrame.from_records(list(dict(c_df).items()))
+df_resampled.drop(columns=df_resampled.columns[0], axis=0, inplace=True)
+st.write("Equal distribution after Borderline SMOTE")
+df_resampled
+# X_resampled
+# y_resampled
+
+
+report = classification_report(X_resampled[cutoff:].target, clf.predict(X_resampled[cutoff:].to_numpy()[:,vars_]), output_dict=True)
+report = pd.DataFrame(report).transpose()
+st.write(report)
