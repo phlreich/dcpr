@@ -83,10 +83,14 @@ classifier = KNeighborsClassifier(n_neighbors=4)
 classifier.fit(X_train, y_train)
 y_pred = classifier.predict(X_test)
 
-from sklearn.metrics import plot_confusion_matrix
 
-disp = plot_confusion_matrix(classifier, X_test, y_test, cmap='Reds')
-st.pyplot()
+
+from sklearn.metrics import confusion_matrix
+
+# predict the test set results
+y_pred = classifier.predict(X_test)
+
+st.write(confusion_matrix(y_test, y_pred))
 
 from sklearn.metrics import classification_report
 
@@ -100,8 +104,7 @@ clf = svm.SVC(kernel='rbf')
 clf.fit(X_train, y_train)
 y_pred = clf.predict(X_test)
 
-disp = plot_confusion_matrix(clf, X_test, y_test, cmap='Reds')
-st.pyplot()
+st.write(confusion_matrix(y_test, y_pred))
 
 st.subheader("Classification Report")
 st.write(pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose())
@@ -144,8 +147,7 @@ classifier = KNeighborsClassifier(n_neighbors=4)
 classifier.fit(X_train_ros, y_train_ros)
 y_pred = classifier.predict(X_test)
 
-disp = plot_confusion_matrix(classifier, X_test, y_test, cmap='Reds')
-st.pyplot()
+st.write(confusion_matrix(y_test, y_pred))
 
 st.subheader("Classification Report")
 st.write(pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose())
@@ -157,8 +159,7 @@ clf = svm.SVC(kernel='rbf')
 clf.fit(X_train_ros, y_train_ros)
 y_pred = clf.predict(X_test)
 
-disp = plot_confusion_matrix(classifier, X_test, y_test, cmap='Reds')
-st.pyplot()
+st.write(confusion_matrix(y_test, y_pred))
 
 st.subheader("Classification Report")
 st.write(pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose())
@@ -193,8 +194,7 @@ classifier = KNeighborsClassifier(n_neighbors=4)
 classifier.fit(X_train_smote, y_train_smote)
 y_pred = classifier.predict(X_test)
 
-disp = plot_confusion_matrix(classifier, X_test, y_test, cmap='Reds')
-st.pyplot()
+st.write(confusion_matrix(y_test, y_pred))
 
 st.subheader("Classification Report")
 st.write(pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose())
@@ -206,8 +206,7 @@ clf = svm.SVC(kernel='rbf')
 clf.fit(X_train_smote, y_train_smote)
 y_pred = clf.predict(X_test)
 
-disp = plot_confusion_matrix(classifier, X_test, y_test, cmap='Reds')
-st.pyplot()
+st.write(confusion_matrix(y_test, y_pred))
 
 st.subheader("Classification Report")
 st.write(pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose())
@@ -242,8 +241,7 @@ st.write("Minimum error:-", min(error), "at K =", error.index(min(error)) + 1)
 classifier = KNeighborsClassifier(n_neighbors=4)
 classifier.fit(X_train_rus, y_train_rus)
 y_pred = classifier.predict(X_test)
-disp = plot_confusion_matrix(classifier, X_test, y_test, cmap='Reds')
-st.pyplot()
+st.write(confusion_matrix(y_test, y_pred))
 
 st.subheader("Classification Report")
 st.write(pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose())
@@ -254,8 +252,7 @@ clf = svm.SVC(kernel='rbf')
 clf.fit(X_train_rus, y_train_rus)
 y_pred = clf.predict(X_test)
 
-disp = plot_confusion_matrix(classifier, X_test, y_test, cmap='Reds')
-st.pyplot()
+st.write(confusion_matrix(y_test, y_pred))
 
 st.subheader("Classification Report")
 st.write(pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose())
@@ -290,8 +287,7 @@ classifier = KNeighborsClassifier(n_neighbors=4)
 classifier.fit(X_train_nearmiss, y_train_nearmiss)
 y_pred = classifier.predict(X_test)
 
-disp = plot_confusion_matrix(classifier, X_test, y_test, cmap='Reds')
-st.pyplot()
+st.write(confusion_matrix(y_test, y_pred))
 
 st.subheader("Classification Report")
 st.write(pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose())
@@ -302,8 +298,7 @@ clf = svm.SVC(kernel='rbf')
 clf.fit(X_train_nearmiss, y_train_nearmiss)
 y_pred = clf.predict(X_test)
 
-disp = plot_confusion_matrix(classifier, X_test, y_test, cmap='Reds')
-st.pyplot()
+st.write(confusion_matrix(y_test, y_pred))
 
 st.subheader("Classification Report")
 st.write(pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose())
