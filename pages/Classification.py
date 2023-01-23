@@ -1,3 +1,5 @@
+from collections import Counter
+
 import streamlit as st
 import pandas as pd
 from sklearn.metrics import classification_report
@@ -50,6 +52,12 @@ st.header("Oversampling with Borderline SMOTE")
 
 X_resampled, y_resampled = BorderlineSMOTE().fit_resample(training_df, training_df.target)
 
+c_df = sorted(Counter(y_resampled).items())
+df_resampled = pd.DataFrame.from_records(list(dict(c_df).items()))
+df_resampled.drop(columns=df_resampled.columns[0], axis=0, inplace=True)
+st.write("Data balance after Undersampling:")
+df_resampled
+
 # train with oversampled data
 clf = tree.DecisionTreeClassifier()
 clf = clf.fit(X_resampled.to_numpy()[:,vars_], X_resampled.target)
@@ -71,4 +79,24 @@ clf = clf.fit(X_resampled.to_numpy()[:,vars_], X_resampled.target)
 # show classification report for oversampled training data
 report = classification_report(test_df.target, clf.predict(test_df.to_numpy()[:,vars_]), output_dict=True)
 report = pd.DataFrame(report).transpose()
+st.write(report)
+
+
+st.header("Undersampling with Repeated Edited NearestNeighbours")
+from imblearn.under_sampling import RepeatedEditedNearestNeighbours
+renn = RepeatedEditedNearestNeighbours()
+X_resampled, y_resampled = renn.fit_resample(training_df, training_df.target)
+
+c_df = sorted(Counter(y_resampled).items())
+df_resampled = pd.DataFrame.from_records(list(dict(c_df).items()))
+df_resampled.drop(columns=df_resampled.columns[0], axis=0, inplace=True)
+st.write("Data balance after Undersampling:")
+df_resampled
+
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(X_resampled.to_numpy()[:,vars_], X_resampled.target)
+report = classification_report(test_df.target, clf.predict(test_df.to_numpy()[:,vars_]), output_dict=True)
+report = pd.DataFrame(report).transpose()
+
+
 st.write(report)
