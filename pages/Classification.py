@@ -19,9 +19,9 @@ vars_ = [True if i in vars_ else False for i in variable_list]
 exclude_percent = st.slider("Percent of data where target=1 to exclude:", 0, 99, 0)
 
 if exclude_percent > 0:
+    df_len = len(df[df.target == 1])
     df = df[df.target == 0]
-    df_len = len(df)
-    cutoff = int(df_len * exclude_percent / 100)
+    cutoff = df_len - int(df_len * exclude_percent / 100)
     df = df.append(st.session_state.df[st.session_state.df.target == 1][:cutoff])
 
 # show data balance
@@ -53,8 +53,8 @@ from imblearn.over_sampling import BorderlineSMOTE
 from collections import Counter
 
 st.header("Oversampling with Borderline SMOTE")
-st.write("Dataset is already balanced")
-st.write(df['target'].value_counts())
+#st.write("Dataset is already balanced")
+#st.write(df['target'].value_counts())
 
 
 X_resampled, y_resampled = BorderlineSMOTE().fit_resample(df, df.target)

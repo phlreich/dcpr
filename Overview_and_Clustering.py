@@ -118,9 +118,9 @@ st.title("Clustering")
 st.subheader(f"Dataset: {dataset}")
 df = datasets[dataset]
 df
-st.subheader(f"Dataset Sample: {dataset}")
-# st.dataframe(df.sample(10))  # Same as st.write(df)
-df
+
+# write df to streamlit session state
+st.session_state.df = df
 
 ######
 # Fixing the Data Types
@@ -301,8 +301,3 @@ get_davies_bouldin_score(reduced, kmeans)
 st.markdown("<h4 style='text-align: center; '>DBSCAN scores:</h4>", unsafe_allow_html=True)
 get_silhouette_coefficient(reduced, dbscan)
 get_davies_bouldin_score(reduced, dbscan)
-
-# write df to streamlit session state
-
-st.session_state.df = df
-st.session_state.vars_ = vars_
