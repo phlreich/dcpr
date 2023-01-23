@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
-
-###################### Classification ####################
+from sklearn.metrics import classification_report
 from sklearn import tree
+from imblearn.over_sampling import BorderlineSMOTE
+from imblearn.over_sampling import SMOTENC
 
-clf = tree.DecisionTreeClassifier()
 st.markdown("<h1 style='text-align: center; '>Decision tree classifier</h1>", unsafe_allow_html=True)
 
 train_percent = st.slider("Percent of data to use for training:", 1, 99, 30)
@@ -16,58 +16,59 @@ vars_ = st.multiselect('Select the attributes to include:',
     default=variable_list[:-1])
 vars_ = [True if i in vars_ else False for i in variable_list]
 
-exclude_percent = st.slider("Percent of data where target=1 to exclude:", 0, 99, 0)
-
-if exclude_percent > 0:
-    df_len = len(df[df.target == 1])
-    df = df[df.target == 0]
-    cutoff = df_len - int(df_len * exclude_percent / 100)
-    df = df.append(st.session_state.df[st.session_state.df.target == 1][:cutoff])
-
-# show data balance
-
-st.markdown("<h4 style='text-align: center; '>Data balance:</h4>", unsafe_allow_html=True)
-
-st.write(df.target.value_counts())
-
 df_len = len(df)
 cutoff = int(df_len * train_percent / 100)
 
-# shuffle df
-df = df.sample(frac=1)
+training_df = df[:cutoff]
+test_df = df[cutoff:]
+
+exclude_percent = st.slider("Percent of data where target=1 to exclude from training data:", 0, 99, 0)
+
+df_len = len(training_df[training_df.target == 1])
+exclude_cutoff = df_len - int(df_len * exclude_percent / 100)
+training_df = pd.concat([training_df[training_df.target == 0], training_df[training_df.target == 1][:exclude_cutoff]])
+
+# show data balance
+st.write("Data balance:")
+st.write(training_df.target.value_counts())
 
 # exclude target from vars_
 vars_[-1] = False
-clf = clf.fit(df[:cutoff].to_numpy()[:,vars_], df[:cutoff].target)
 
-from sklearn.metrics import classification_report
+st.header("Unbalanced training data results:")
 
-st.markdown("<h4 style='text-align: center; '>Classification report:</h4>", unsafe_allow_html=True)
+# train with unaltered data
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(training_df.to_numpy()[:,vars_], training_df.target)
 
-report = classification_report(df[cutoff:].target, clf.predict(df[cutoff:].to_numpy()[:,vars_]), output_dict=True)
+# show classification report for unaltered training data
+report = classification_report(test_df.target, clf.predict(test_df.to_numpy()[:,vars_]), output_dict=True)
 report = pd.DataFrame(report).transpose()
-
 st.write(report)
 
-from imblearn.over_sampling import BorderlineSMOTE
-from collections import Counter
-
 st.header("Oversampling with Borderline SMOTE")
-#st.write("Dataset is already balanced")
-#st.write(df['target'].value_counts())
+
+X_resampled, y_resampled = BorderlineSMOTE().fit_resample(training_df, training_df.target)
+
+# train with oversampled data
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(X_resampled.to_numpy()[:,vars_], X_resampled.target)
+
+# show classification report for oversampled training data
+report = classification_report(test_df.target, clf.predict(test_df.to_numpy()[:,vars_]), output_dict=True)
+report = pd.DataFrame(report).transpose()
+st.write(report)
 
 
-X_resampled, y_resampled = BorderlineSMOTE().fit_resample(df, df.target)
-c_df = sorted(Counter(y_resampled).items())
-# df_resampled = pd.DataFrame.from_dict(Counter(y_resampled).items(), orient='index').reset_index()
-df_resampled = pd.DataFrame.from_records(list(dict(c_df).items()))
-df_resampled.drop(columns=df_resampled.columns[0], axis=0, inplace=True)
-st.write("Equal distribution after Borderline SMOTE")
-df_resampled
-# X_resampled
-# y_resampled
+st.header("SMOTENC results")
+categorical_mask = [False, True, True, False, False, True, True, False, True, False, True, True, True, True]
+X_resampled, y_resampled = SMOTENC(categorical_mask).fit_resample(training_df, training_df.target)
 
+# train with oversampled data
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(X_resampled.to_numpy()[:,vars_], X_resampled.target)
 
-report = classification_report(X_resampled[cutoff:].target, clf.predict(X_resampled[cutoff:].to_numpy()[:,vars_]), output_dict=True)
+# show classification report for oversampled training data
+report = classification_report(test_df.target, clf.predict(test_df.to_numpy()[:,vars_]), output_dict=True)
 report = pd.DataFrame(report).transpose()
 st.write(report)
