@@ -7,13 +7,13 @@ from imblearn.over_sampling import SMOTENC
 
 st.markdown("<h1 style='text-align: center; '>Decision tree classifier</h1>", unsafe_allow_html=True)
 
-train_percent = st.slider("Percent of data to use for training:", 1, 99, 30)
+train_percent = st.slider("Percent of data to use for training:", 1, 99, 10)
 
 df = st.session_state.df
 variable_list = st.session_state.variable_list
 vars_ = st.multiselect('Select the attributes to include:',
     variable_list,
-    default=variable_list[:-1])
+    default=[variable_list[i] for i in [3,4,5,6,7,8,9,10,12]])
 vars_ = [True if i in vars_ else False for i in variable_list]
 
 df_len = len(df)
@@ -22,7 +22,7 @@ cutoff = int(df_len * train_percent / 100)
 training_df = df[:cutoff]
 test_df = df[cutoff:]
 
-exclude_percent = st.slider("Percent of data where target=1 to exclude from training data:", 0, 99, 0)
+exclude_percent = st.slider("Percent of data where target=1 to exclude from training data:", 0, 99, 86)
 
 df_len = len(training_df[training_df.target == 1])
 exclude_cutoff = df_len - int(df_len * exclude_percent / 100)
@@ -59,16 +59,17 @@ report = classification_report(test_df.target, clf.predict(test_df.to_numpy()[:,
 report = pd.DataFrame(report).transpose()
 st.write(report)
 
+# undersampling
+from imblearn.under_sampling import RandomUnderSampler
 
-st.header("SMOTENC results")
-categorical_mask = [False, True, True, False, False, True, True, False, True, False, True, True, True, True]
-X_resampled, y_resampled = SMOTENC(categorical_mask).fit_resample(training_df, training_df.target)
+st.header("Undersampling results")
+X_resampled, y_resampled = RandomUnderSampler().fit_resample(training_df, training_df.target)
 
-# train with oversampled data
+# train with undersampled data
 clf = tree.DecisionTreeClassifier()
 clf = clf.fit(X_resampled.to_numpy()[:,vars_], X_resampled.target)
 
-# show classification report for oversampled training data
+# show classification report for undersampled training data
 report = classification_report(test_df.target, clf.predict(test_df.to_numpy()[:,vars_]), output_dict=True)
 report = pd.DataFrame(report).transpose()
 st.write(report)
