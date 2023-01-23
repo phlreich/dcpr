@@ -65,13 +65,13 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random
 st.header("6. KNN")
 error = []
 # Calculating error for K values between 1 and 30
-for i in range(1, 30):
+for i in range(2, 10):
     knn = KNeighborsClassifier(n_neighbors=i)
     knn.fit(X_train, y_train)
     pred_i = knn.predict(X_test)
     error.append(np.mean(pred_i != y_test))
 plt.figure(figsize=(12, 6))
-plt.plot(range(1, 30), error, color='red', linestyle='dashed', marker='o',
+plt.plot(range(2, 10), error, color='red', linestyle='dashed', marker='o',
          markerfacecolor='blue', markersize=10)
 plt.title('Error Rate K Value')
 plt.xlabel('K Value')
@@ -130,13 +130,13 @@ st.write(sorted(Counter(y_train_ros).items()))
 st.subheader("KNN")
 error = []
 # Calculating error for K values between 1 and 30
-for i in range(1, 30):
+for i in range(2, 10):
     knn = KNeighborsClassifier(n_neighbors=i)
     knn.fit(X_train_ros, y_train_ros)
     pred_i = knn.predict(X_test)
     error.append(np.mean(pred_i != y_test))
 plt.figure(figsize=(12, 6))
-plt.plot(range(1, 30), error, color='red', linestyle='dashed', marker='o',
+plt.plot(range(2, 10), error, color='red', linestyle='dashed', marker='o',
          markerfacecolor='blue', markersize=10)
 plt.title('Error Rate K Value')
 plt.xlabel('K Value')
@@ -179,13 +179,13 @@ st.write(sorted(Counter(y_train_smote).items()))
 st.subheader("KNN")
 error = []
 # Calculating error for K values between 1 and 30
-for i in range(1, 30):
+for i in range(2, 10):
     knn = KNeighborsClassifier(n_neighbors=i)
     knn.fit(X_train_smote, y_train_smote)
     pred_i = knn.predict(X_test)
     error.append(np.mean(pred_i != y_test))
 plt.figure(figsize=(12, 6))
-plt.plot(range(1, 30), error, color='red', linestyle='dashed', marker='o',
+plt.plot(range(2, 10), error, color='red', linestyle='dashed', marker='o',
          markerfacecolor='blue', markersize=10)
 plt.title('Error Rate K Value')
 plt.xlabel('K Value')
@@ -229,13 +229,13 @@ st.write(sorted(Counter(y_train_rus).items()))
 st.subheader("KNN")
 error = []
 # Calculating error for K values between 1 and 30
-for i in range(1, 30):
+for i in range(2, 10):
     knn = KNeighborsClassifier(n_neighbors=i)
     knn.fit(X_train_rus, y_train_rus)
     pred_i = knn.predict(X_test)
     error.append(np.mean(pred_i != y_test))
 plt.figure(figsize=(12, 6))
-plt.plot(range(1, 30), error, color='red', linestyle='dashed', marker='o',
+plt.plot(range(2, 10), error, color='red', linestyle='dashed', marker='o',
          markerfacecolor='blue', markersize=10)
 plt.title('Error Rate K Value')
 plt.xlabel('K Value')
@@ -276,13 +276,13 @@ st.write(sorted(Counter(y_train_nearmiss).items()))
 st.subheader("KNN")
 error = []
 # Calculating error for K values between 1 and 30
-for i in range(1, 30):
+for i in range(2, 10):
     knn = KNeighborsClassifier(n_neighbors=i)
     knn.fit(X_train_nearmiss, y_train_nearmiss)
     pred_i = knn.predict(X_test)
     error.append(np.mean(pred_i != y_test))
 plt.figure(figsize=(12, 6))
-plt.plot(range(1, 30), error, color='red', linestyle='dashed', marker='o',
+plt.plot(range(2, 10), error, color='red', linestyle='dashed', marker='o',
          markerfacecolor='blue', markersize=10)
 plt.title('Error Rate K Value')
 plt.xlabel('K Value')
