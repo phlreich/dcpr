@@ -264,7 +264,7 @@ get_silhouette_coefficient(non_reduced, dbscan)
 get_davies_bouldin_score(non_reduced, dbscan)
 ############# t-sne ############################
 
-X_embedded = TSNE(n_components=2, learning_rate='auto', init='pca', perplexity=3).fit_transform(df.to_numpy())
+X_embedded = TSNE(n_components=2, learning_rate="auto", init='pca', perplexity=20).fit_transform(df.to_numpy())
 tsne_plot = plt.figure()
 plt.scatter(X_embedded[:, 0], X_embedded[:, 1], c=coloring)
 plt.title("t-SNE, coloring:" + coloring_name)
